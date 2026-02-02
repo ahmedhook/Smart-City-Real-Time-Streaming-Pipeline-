@@ -3,7 +3,7 @@ from pyspark.sql.types import StructType, StructField, StringType, IntegerType, 
 from pyspark.sql.functions import from_json, col
 from config import configuration
 
-# Schemas
+
 
 vehicleSchema = StructType([
     StructField("id", StringType(), True),
@@ -61,7 +61,7 @@ emergencySchema = StructType([
 ])
 
 
-# Kafka Stream Reader
+
 
 def read_kafka_topic(spark: SparkSession, topic: str, schema: StructType) -> DataFrame:
     return (
@@ -78,7 +78,7 @@ def read_kafka_topic(spark: SparkSession, topic: str, schema: StructType) -> Dat
     )
 
 
-# Stream writer
+
 
 def stream_writer(input: DataFrame, checkpointFolder: str, output: str):
     return input.writeStream \
@@ -89,11 +89,9 @@ def stream_writer(input: DataFrame, checkpointFolder: str, output: str):
         .start()
 
 
-# ----------------------------------------
-# Main
 
 def main():
-    # إنشاء SparkSession
+    
     spark = (
         SparkSession.builder
         .appName("SmartCityStreaming")
@@ -113,14 +111,12 @@ def main():
 
     spark.sparkContext.setLogLevel("WARN")
 
-    # قراءة كل الـ topics
     vehicleDF = read_kafka_topic(spark, "vehicle-data", vehicleSchema)
     gpsDF = read_kafka_topic(spark, "gps-data", gpsSchema)
     trafficDF = read_kafka_topic(spark, "traffic-data", trafficSchema)
     weatherDF = read_kafka_topic(spark, "weather-data", weatherSchema)
     emergencyDF = read_kafka_topic(spark, "emergency-data", emergencySchema)
 
-    # كتابة البيانات على S3
     query1 = stream_writer(vehicleDF, 
                           checkpointFolder='s3a://spark-streaming-data-big-data/checkpoints/vehicle_data/',
                           output='s3a://spark-streaming-data-big-data/data/vehicle_data/')
@@ -141,10 +137,9 @@ def main():
                           checkpointFolder='s3a://spark-streaming-data-big-data/checkpoints/emergency_data/',
                           output='s3a://spark-streaming-data-big-data/data/emergency_data/')
 
-    # انتظار أي عملية streaming
+    
     spark.streams.awaitAnyTermination()
 
 
-# ----------------------------------------
 if __name__ == "__main__":
     main()

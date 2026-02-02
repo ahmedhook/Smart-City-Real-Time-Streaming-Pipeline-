@@ -51,7 +51,6 @@ def generate_traffic_camera_data(device_id, timestamp, location, camera_id):
         'snapshot': 'Base64EncodedImageString',
     }
 
-
 def generate_weather_data(device_id, timestamp, location):
     return {
         'id': str(uuid.uuid4()),
@@ -66,7 +65,6 @@ def generate_weather_data(device_id, timestamp, location):
         'air_quality_index': round(random.uniform(0, 500), 2),
     }
 
-
 def generate_emergency_data(device_id, timestamp, location):
     return {
         'id': str(uuid.uuid4()),
@@ -79,7 +77,6 @@ def generate_emergency_data(device_id, timestamp, location):
         'description': 'Details about the emergency incident.',
     }  
 
-
 def simulate_vehicle_movement():
     global start_location   
     start_location["latitude"] += LATITUDE_INCREMENT
@@ -87,7 +84,6 @@ def simulate_vehicle_movement():
     start_location["latitude"] += random.uniform(-0.0005, 0.0005)
     start_location["longitude"] += random.uniform(-0.0005, 0.0005)
     return start_location
-
 
 def generate_vehicle_data(device_id):
     location = simulate_vehicle_movement()
@@ -104,12 +100,10 @@ def generate_vehicle_data(device_id):
         'fueltype': 'Hybrid'
     }
 
-
 def json_serializer(obj):
     if isinstance(obj, uuid.uuid4):
         return str(obj)
     raise TypeError(f"Type of {obj.__class__.__name__} not json serializable")
-
 
 def delivery_report(err, msg):
     if err is not None:
@@ -117,7 +111,6 @@ def delivery_report(err, msg):
     else:
         if msg.offset() % 5 == 0:
             print(f" {msg.topic()}: offset {msg.offset()}")
-
 
 def produce_data_to_kafka(producer, topic, data):
     producer.produce(
@@ -127,7 +120,6 @@ def produce_data_to_kafka(producer, topic, data):
         on_delivery=delivery_report
     )
     producer.flush()
-
 
 def simulate_journey(producer, device_id):
     print(" Starting vehicle journey from London to Birmingham...")
